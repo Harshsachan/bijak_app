@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   get: ^4.6.6
   auto_size_text: ^3.0.0
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +71,9 @@ flutter:
     - assets/images/carrot.jpeg
     - assets/images/potato.jpeg
     - assets/images/spinach.jpg
+    - assets/images/banner1.jpeg
+    - assets/images/banner2.jpeg
+    - assets/images/banner3.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
