@@ -310,8 +310,15 @@ class _HomePageState extends State<HomePage> {
                 bool isInCart = cartItems.any((item) => item.id == product.id);
                 int cartQuantity = isInCart ? cartItems.firstWhere((item) => item.id == product.id).quantity : 0;
                 return GestureDetector(
-                  onTap: (){
-                    Get.to(() => ProductDetailPage(product: product));
+                  onTap: ()async{
+                      var result = await Get.to(()=>ProductDetailPage(product: product));
+                      if(result!=null){
+                        setState(() {
+                          print(cartItems.length);
+                          cartItems = result;
+                        });
+                        _saveCartData();
+                      }
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -393,8 +400,15 @@ class _HomePageState extends State<HomePage> {
               bool isInCart = cartItems.any((item) => item.id == product.id);
               int cartQuantity = isInCart ? cartItems.firstWhere((item) => item.id == product.id).quantity : 0;
               return GestureDetector(
-                onTap: () {
-                  Get.to(() => ProductDetailPage(product: product));
+                onTap: () async{
+                  var result = await Get.to(()=>ProductDetailPage(product: product));
+                  if(result!=null){
+                    setState(() {
+                      print(cartItems.length);
+                      cartItems = result;
+                    });
+                    _saveCartData();
+                  }
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
