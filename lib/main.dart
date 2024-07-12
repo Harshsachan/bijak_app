@@ -4,10 +4,12 @@ import 'package:bijak_app/data/dummy_data.dart';
 import 'package:bijak_app/module/home/controller/category_controller.dart';
 import 'package:bijak_app/module/home/screen/home_screen.dart';
 import 'package:bijak_app/module/profile/profile_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
@@ -15,6 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       home: MainScreen(),
     );
   }

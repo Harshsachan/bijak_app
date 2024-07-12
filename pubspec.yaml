@@ -38,6 +38,7 @@ dependencies:
   get: ^4.6.6
   auto_size_text: ^3.0.0
   shimmer: ^3.0.0
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:
@@ -74,6 +75,15 @@ flutter:
     - assets/images/banner1.jpeg
     - assets/images/banner2.jpeg
     - assets/images/banner3.jpeg
+    - assets/images/apple.jpg
+    - assets/images/apple_juice.jpeg
+    - assets/images/banana.jpeg
+    - assets/images/blueberry.jpg
+    - assets/images/fruit_combo.jpeg
+    - assets/images/honey.jpg
+    - assets/images/mango.jpeg
+    - assets/images/orange_juice.jpg
+    - assets/images/strawberry.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

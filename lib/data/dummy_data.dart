@@ -1,19 +1,46 @@
 // dummy_data.dart
 
 class Product {
+  final int id;
   final String name;
   final String weight;
   final String image;
   final double price;
   final String description;
+  int quantity;
 
   Product({
+    required this.id,
     required this.name,
     required this.weight,
     required this.image,
     required this.price,
     required this.description,
+    this.quantity=0,
   });
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      id: json['id'],
+      name: json['name'],
+      weight: json['weight'],
+      image: json['image'],
+      price: json['price'],
+      description: json['description'],
+      quantity: json['quantity'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'weight': weight,
+      'image': image,
+      'price': price,
+      'description': description,
+      'quantity': quantity,
+    };
+  }
 }
 
 class Category {
@@ -31,6 +58,7 @@ List<Category> dummyData = [
     name: 'Vegetables',
     products: [
       Product(
+        id: 1,
         name: 'Tomato',
         weight: '1 kg',
         image: 'assets/images/tomato.jpg',
@@ -38,6 +66,7 @@ List<Category> dummyData = [
         description: 'Fresh red tomatoes',
       ),
       Product(
+        id: 2,
         name: 'Potato',
         weight: '1 kg',
         image: 'assets/images/potato.jpeg',
@@ -45,6 +74,7 @@ List<Category> dummyData = [
         description: 'Fresh potatoes',
       ),
       Product(
+        id: 3,
         name: 'Carrot',
         weight: '1 kg',
         image: 'assets/images/carrot.jpeg',
@@ -52,6 +82,7 @@ List<Category> dummyData = [
         description: 'Fresh potatoes',
       ),
       Product(
+        id: 4,
         name: 'Cabbage',
         weight: '1 kg',
         image: 'assets/images/cabbage.jpeg',
@@ -59,6 +90,7 @@ List<Category> dummyData = [
         description: 'Fresh potatoes',
       ),
       Product(
+        id: 5,
         name: 'Spinach',
         weight: '1 kg',
         image: 'assets/images/spinach.jpg',
@@ -72,6 +104,7 @@ List<Category> dummyData = [
     name: 'Fruits',
     products: [
       Product(
+        id: 6,
         name: 'Apple',
         weight: '1 kg',
         image: 'assets/images/apple.jpg',
@@ -79,9 +112,33 @@ List<Category> dummyData = [
         description: 'Fresh red apples',
       ),
       Product(
+        id: 7,
         name: 'Banana',
         weight: '1 dozen',
-        image: 'assets/images/banana.jpg',
+        image: 'assets/images/banana.jpeg',
+        price: 2.5,
+        description: 'Fresh bananas',
+      ),
+      Product(
+        id: 8,
+        name: 'Blueberry',
+        weight: '1 dozen',
+        image: 'assets/images/blueberry.jpg',
+        price: 2.5,
+        description: 'Fresh bananas',
+      ),
+      Product(
+        id: 9,
+        name: 'Mango',
+        weight: '1 dozen',
+        image: 'assets/images/mango.jpeg',
+        price: 2.5,
+        description: 'Fresh bananas',
+      ), Product(
+        id: 10,
+        name: 'Strawberry',
+        weight: '1 dozen',
+        image: 'assets/images/strawberry.jpg',
         price: 2.5,
         description: 'Fresh bananas',
       ),
@@ -92,6 +149,7 @@ List<Category> dummyData = [
     name: 'Fresh Juice Items',
     products: [
       Product(
+        id: 11,
         name: 'Orange Juice',
         weight: '1 litre',
         image: 'assets/images/orange_juice.jpg',
@@ -99,9 +157,10 @@ List<Category> dummyData = [
         description: 'Freshly squeezed orange juice',
       ),
       Product(
+        id: 12,
         name: 'Apple Juice',
         weight: '1 litre',
-        image: 'assets/images/apple_juice.jpg',
+        image: 'assets/images/apple_juice.jpeg',
         price: 4.5,
         description: 'Freshly squeezed apple juice',
       ),
@@ -112,19 +171,21 @@ List<Category> dummyData = [
     name: 'Combos',
     products: [
       Product(
+        id: 13,
         name: 'Fruit Combo',
         weight: '3 kg',
-        image: 'assets/images/fruit_combo.jpg',
+        image: 'assets/images/fruit_combo.jpeg',
         price: 10.0,
         description: 'A combo of fresh fruits',
       ),
-      Product(
-        name: 'Vegetable Combo',
-        weight: '3 kg',
-        image: 'assets/images/vegetable_combo.jpg',
-        price: 8.0,
-        description: 'A combo of fresh vegetables',
-      ),
+      // Product(
+      //   id: 11,
+      //   name: 'Vegetable Combo',
+      //   weight: '3 kg',
+      //   image: 'assets/images/vegetable_combo.jpg',
+      //   price: 8.0,
+      //   description: 'A combo of fresh vegetables',
+      // ),
       // Add 3 more combo products here
     ],
   ),
@@ -132,19 +193,21 @@ List<Category> dummyData = [
     name: 'Pure Produced Items',
     products: [
       Product(
+        id: 14,
         name: 'Pure Honey',
         weight: '500 g',
         image: 'assets/images/honey.jpg',
         price: 6.0,
         description: 'Pure natural honey',
       ),
-      Product(
-        name: 'Pure Ghee',
-        weight: '1 kg',
-        image: 'assets/images/ghee.jpg',
-        price: 20.0,
-        description: 'Pure desi ghee',
-      ),
+      // Product(
+      //   id: 13,
+      //   name: 'Pure Ghee',
+      //   weight: '1 kg',
+      //   image: 'assets/images/ghee.jpg',
+      //   price: 20.0,
+      //   description: 'Pure desi ghee',
+      // ),
       // Add 3 more pure produced items here
     ],
   ),
