@@ -16,10 +16,12 @@ class CartPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() => Scaffold(
       appBar: AppBar(
-        title: const Text('Cart', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.green,
+
+        title: const Text('Cart', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold,color: Colors.white)),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back,color: Colors.white,),
           onPressed: () {
             Get.back(result: cartController.cartItems);
           },
