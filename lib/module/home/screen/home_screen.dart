@@ -20,15 +20,15 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.green,
         leading: IconButton(
-          icon: const Icon(Icons.person),
+          icon: const Icon(Icons.person ,color: Colors.white,),
           onPressed: () {},
           padding: const EdgeInsets.only(left: 16.0),
         ),
-        title: const Text('App Name', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+        title: const Text('BIJAK', style: TextStyle(fontSize: 16.0,color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout,color: Colors.white,),
             onPressed: () {},
             padding: const EdgeInsets.only(right: 16.0),
           ),
@@ -82,7 +82,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget buildContent(double screenWidth,BuildContext context) {
+  Widget buildContent(double width,BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     return SingleChildScrollView(
       child: Column(
@@ -91,7 +91,7 @@ class HomePage extends StatelessWidget {
           searchBar(),
 
           // Image Banners
-          imageBanner(screenWidth),
+          imageBanner(width),
 
           // Categories
           const Padding(
@@ -105,17 +105,17 @@ class HomePage extends StatelessWidget {
 
           // Recently Ordered
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+            padding: EdgeInsets.only(top: 16.0, right: 16.0,left: 16.0),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text('Recently Ordered', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
             ),
           ),
-          buildRecentOrder(height),
+          buildRecentOrder(height,width),
 
           // Seasonal Products
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text('Seasonal Products', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
@@ -136,7 +136,7 @@ class HomePage extends StatelessWidget {
       child: TextField(
         decoration: InputDecoration(
           hintText: 'Search Here',
-          hintStyle: const TextStyle(fontSize: 14.0, color: Colors.grey),
+          hintStyle: const TextStyle(fontSize: 14.0, color: Colors.grey ,fontFamily: 'regular'),
           prefixIcon: const Icon(Icons.search, color: Colors.grey),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
@@ -149,9 +149,9 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget imageBanner(double screenWidth){
+  Widget imageBanner(double width){
     return  SizedBox(
-      height: screenWidth * 2 / 3,
+      height: width * 2 / 3,
       child: PageView.builder(
         controller: homeController.pageController,
         itemCount: 3,
@@ -197,9 +197,9 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget buildRecentOrder(double height){
+  Widget buildRecentOrder(double height,double width){
     return SizedBox(
-      height: height/3.5,
+      height: height/4,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: homeController.recentlyOrdered.length,
@@ -218,7 +218,7 @@ class HomePage extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
-                width: 120.0,
+                width: width/3.3,
                 decoration:  BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8.0),
@@ -227,20 +227,20 @@ class HomePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.asset(product.image, height: 96.0, width: double.infinity, fit: BoxFit.cover),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child:  Image.asset(product.image, height: 96.0, width: double.infinity, fit: BoxFit.cover),
                     ),
+                   
                     Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-
                         children: [
                           Text(product.name, style: const TextStyle(fontSize: 12.0), maxLines: 1),
                           Text(product.weight, style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
                           Text('\$${product.price}', style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
-                          isInCart?
+                          isInCart ?
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -258,12 +258,14 @@ class HomePage extends StatelessWidget {
                                 },
                               ),
                             ],
-                          ) :
+                          ):
                           Align(
-                            alignment: Alignment.bottomRight,
-                            child: ElevatedButton(
-                              onPressed: () { homeController.addToCart(product);},
-                              child: const AutoSizeText('Add to cart',maxLines: 1,),
+                            alignment: Alignment.bottomCenter,
+                            child: Container(
+                              child: ElevatedButton(
+                                onPressed: () { homeController.addToCart(product);},
+                                child: const AutoSizeText('Add to cart',maxLines: 1,),
+                              ),
                             ),
                           ),
                         ],
