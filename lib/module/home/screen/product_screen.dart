@@ -1,5 +1,6 @@
 import 'package:bijak_app/data/dummy_data.dart';
 import 'package:bijak_app/module/home/controller/product_controller.dart';
+import 'package:bijak_app/module/home/screen/cart_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -96,7 +97,6 @@ class ProductDetailPage extends StatelessWidget {
                             ElevatedButton(
                               onPressed: () {
                                 productController.addToCart(product);
-                                Get.snackbar('Cart', 'Item added to cart', snackPosition: SnackPosition.BOTTOM);
                               },
                               child: const Text('Add to cart'),
                             ),
@@ -111,6 +111,17 @@ class ProductDetailPage extends StatelessWidget {
           ),
         ),
       ),
+      floatingActionButton: Obx(()=>Visibility(
+        visible: productController.cartItems.isNotEmpty,
+        child: FloatingActionButton(
+          onPressed: () async {
+            var result = await Get.to(() => CartPage(cartItems: productController.cartItems));
+            if (result != null) {
+              productController.cartItems.value = result;
+              productController.saveCartData();
+            }
+          }, child: const Icon(Icons.shopping_cart),),
+      ),),
     );
   }
 }
