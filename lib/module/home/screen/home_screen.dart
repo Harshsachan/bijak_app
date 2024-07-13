@@ -88,37 +88,10 @@ class HomePage extends StatelessWidget {
       child: Column(
         children: [
           // Search Bar
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search Here',
-                hintStyle: const TextStyle(fontSize: 14.0, color: Colors.grey),
-                prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: const BorderSide(color: Colors.black, width: 1.0),
-                ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-            ),
-          ),
+          searchBar(),
 
           // Image Banners
-          SizedBox(
-            height: screenWidth * 2 / 3,
-            child: PageView.builder(
-              controller: homeController.pageController,
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Image.asset('assets/images/banner${index + 1}.jpeg', fit: BoxFit.cover),
-                );
-              },
-            ),
-          ),
+          imageBanner(screenWidth),
 
           // Categories
           const Padding(
@@ -128,35 +101,7 @@ class HomePage extends StatelessWidget {
               child: Text('Categories', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
             ),
           ),
-          SizedBox(
-            height: height/8,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: homeController.categories.length,
-              itemBuilder: (context, index) {
-                final category = homeController.categories[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 24.0,
-                        backgroundImage: AssetImage(category.products[0].image),
-                      ),
-                      const SizedBox(height: 8.0),
-                      Text(
-                        category.name,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
+          buildCategories(height),
 
           // Recently Ordered
           const Padding(
@@ -166,85 +111,7 @@ class HomePage extends StatelessWidget {
               child: Text('Recently Ordered', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
             ),
           ),
-          SizedBox(
-            height: height/3.5,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: homeController.recentlyOrdered.length,
-              itemBuilder: (context, index) {
-                final product = homeController.recentlyOrdered[index];
-                bool isInCart = homeController.cartItems.any((item) => item.id == product.id);
-                int cartQuantity = isInCart ? homeController.cartItems.firstWhere((item) => item.id == product.id).quantity : 0;
-                return GestureDetector(
-                  onTap: ()async{
-                      var result = await Get.to(()=>ProductDetailPage(product: product));
-                      if(result!=null){
-                          homeController.cartItems.value = result;
-                        homeController.saveCartData();
-                      }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: 120.0,
-                      decoration:  BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8.0),
-                        boxShadow: [const BoxShadow(color: Colors.grey, blurRadius: 3.0)],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Image.asset(product.image, height: 96.0, width: double.infinity, fit: BoxFit.cover),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-
-                              children: [
-                                Text(product.name, style: const TextStyle(fontSize: 12.0), maxLines: 1),
-                                Text(product.weight, style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
-                                Text('\$${product.price}', style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
-                                isInCart?
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.remove),
-                                      onPressed: () {
-                                        homeController.removeFromCart(product);
-                                      },
-                                    ),
-                                    Text('$cartQuantity'),
-                                    IconButton(
-                                      icon: const Icon(Icons.add),
-                                      onPressed: () {
-                                        homeController.addToCart(product);
-                                      },
-                                    ),
-                                  ],
-                                ) :
-                                Align(
-                                  alignment: Alignment.bottomRight,
-                                  child: ElevatedButton(
-                                    onPressed: () { homeController.addToCart(product);},
-                                    child: const AutoSizeText('Add to cart',maxLines: 1,),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+          buildRecentOrder(height),
 
           // Seasonal Products
           const Padding(
@@ -254,88 +121,243 @@ class HomePage extends StatelessWidget {
               child: Text('Seasonal Products', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
             ),
           ),
-          ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: homeController.seasonalProducts.length,
-            itemBuilder: (context, index) {
-              final product = homeController.seasonalProducts[index];
-              bool isInCart = homeController.cartItems.any((item) => item.id == product.id);
-              int cartQuantity = isInCart ? homeController.cartItems.firstWhere((item) => item.id == product.id).quantity : 0;
-              return GestureDetector(
-                onTap: () async{
-                  var result = await Get.to(()=>ProductDetailPage(product: product));
-                  if(result!=null){
-                      homeController.cartItems.value = result;
-                    homeController.saveCartData();
-                  }
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8.0),
-                      boxShadow: [const BoxShadow(color: Colors.grey, blurRadius: 3.0)],
-                    ),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Image.asset(product.image, height: 96.0, width: 96.0, fit: BoxFit.cover),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(product.name, style: const TextStyle(fontSize: 12.0), maxLines: 1),
-                                Text(product.weight, style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
-                                Text('\$${product.price}', style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
-                                isInCart?
-                                Align(
-                                  alignment: Alignment.bottomRight,
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      IconButton(
-                                        icon: const Icon(Icons.remove),
-                                        onPressed: () {
-                                          homeController.removeFromCart(product);
-                                        },
-                                      ),
-                                      Text('$cartQuantity'),
-                                      IconButton(
-                                        icon: const Icon(Icons.add),
-                                        onPressed: () {
-                                          homeController.addToCart(product);
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ):
-                                Align(
-                                  alignment: Alignment.bottomRight,
-                                  child: ElevatedButton(
-                                    onPressed: () { homeController.addToCart(product);},
-                                    child: const AutoSizeText('Add to cart',maxLines: 1,),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
+          buildSeasonalProduct(),
 
         ],
       ),
+    );
+
+
+  }
+
+  Widget searchBar(){
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+      child: TextField(
+        decoration: InputDecoration(
+          hintText: 'Search Here',
+          hintStyle: const TextStyle(fontSize: 14.0, color: Colors.grey),
+          prefixIcon: const Icon(Icons.search, color: Colors.grey),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: const BorderSide(color: Colors.black, width: 1.0),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget imageBanner(double screenWidth){
+    return  SizedBox(
+      height: screenWidth * 2 / 3,
+      child: PageView.builder(
+        controller: homeController.pageController,
+        itemCount: 3,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Image.asset('assets/images/banner${index + 1}.jpeg', fit: BoxFit.cover),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget buildCategories(double height){
+    return SizedBox(
+      height: height/8,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: homeController.categories.length,
+        itemBuilder: (context, index) {
+          final category = homeController.categories[index];
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Column(
+              children: [
+                CircleAvatar(
+                  radius: 24.0,
+                  backgroundImage: AssetImage(category.products[0].image),
+                ),
+                const SizedBox(height: 8.0),
+                Text(
+                  category.name,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget buildRecentOrder(double height){
+    return SizedBox(
+      height: height/3.5,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: homeController.recentlyOrdered.length,
+        itemBuilder: (context, index) {
+          final product = homeController.recentlyOrdered[index];
+          bool isInCart = homeController.cartItems.any((item) => item.id == product.id);
+          int cartQuantity = isInCart ? homeController.cartItems.firstWhere((item) => item.id == product.id).quantity : 0;
+          return GestureDetector(
+            onTap: ()async{
+              var result = await Get.to(()=>ProductDetailPage(product: product));
+              if(result!=null){
+                homeController.cartItems.value = result;
+                homeController.saveCartData();
+              }
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: 120.0,
+                decoration:  BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8.0),
+                  boxShadow: [const BoxShadow(color: Colors.grey, blurRadius: 3.0)],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset(product.image, height: 96.0, width: double.infinity, fit: BoxFit.cover),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+
+                        children: [
+                          Text(product.name, style: const TextStyle(fontSize: 12.0), maxLines: 1),
+                          Text(product.weight, style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
+                          Text('\$${product.price}', style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
+                          isInCart?
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.remove),
+                                onPressed: () {
+                                  homeController.removeFromCart(product);
+                                },
+                              ),
+                              Text('$cartQuantity'),
+                              IconButton(
+                                icon: const Icon(Icons.add),
+                                onPressed: () {
+                                  homeController.addToCart(product);
+                                },
+                              ),
+                            ],
+                          ) :
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: ElevatedButton(
+                              onPressed: () { homeController.addToCart(product);},
+                              child: const AutoSizeText('Add to cart',maxLines: 1,),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget buildSeasonalProduct(){
+    return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: homeController.seasonalProducts.length,
+      itemBuilder: (context, index) {
+        final product = homeController.seasonalProducts[index];
+        bool isInCart = homeController.cartItems.any((item) => item.id == product.id);
+        int cartQuantity = isInCart ? homeController.cartItems.firstWhere((item) => item.id == product.id).quantity : 0;
+        return GestureDetector(
+          onTap: () async{
+            var result = await Get.to(()=>ProductDetailPage(product: product));
+            if(result!=null){
+              homeController.cartItems.value = result;
+              homeController.saveCartData();
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8.0),
+                boxShadow: [const BoxShadow(color: Colors.grey, blurRadius: 3.0)],
+              ),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Image.asset(product.image, height: 96.0, width: 96.0, fit: BoxFit.cover),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(product.name, style: const TextStyle(fontSize: 12.0), maxLines: 1),
+                          Text(product.weight, style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
+                          Text('\$${product.price}', style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
+                          isInCart?
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.remove),
+                                  onPressed: () {
+                                    homeController.removeFromCart(product);
+                                  },
+                                ),
+                                Text('$cartQuantity'),
+                                IconButton(
+                                  icon: const Icon(Icons.add),
+                                  onPressed: () {
+                                    homeController.addToCart(product);
+                                  },
+                                ),
+                              ],
+                            ),
+                          ):
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: ElevatedButton(
+                              onPressed: () { homeController.addToCart(product);},
+                              child: const AutoSizeText('Add to cart',maxLines: 1,),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
