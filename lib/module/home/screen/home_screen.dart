@@ -52,9 +52,7 @@ class _HomePageState extends State<HomePage> {
             var result = await Get.to(() => CartPage(cartItems: homeController.cartItems));
             print(result);
             if (result != null) {
-              setState(() {
-                homeController.cartItems = result;
-              });
+                homeController.cartItems.value = result;
               homeController.saveCartData();
             }
           }, child: Icon(Icons.shopping_cart),),
@@ -194,9 +192,7 @@ class _HomePageState extends State<HomePage> {
                       var result = await Get.to(()=>ProductDetailPage(product: product));
                       print("result ${result.toString()}");
                       if(result!=null){
-                        setState(() {
-                          homeController.cartItems = result;
-                        });
+                          homeController.cartItems.value = result;
                         homeController.saveCartData();
                       }
                   },
@@ -283,9 +279,7 @@ class _HomePageState extends State<HomePage> {
                 onTap: () async{
                   var result = await Get.to(()=>ProductDetailPage(product: product));
                   if(result!=null){
-                    setState(() {
-                      homeController.cartItems = result;
-                    });
+                      homeController.cartItems.value = result;
                     homeController.saveCartData();
                   }
                 },
