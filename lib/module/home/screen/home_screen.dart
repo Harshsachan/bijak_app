@@ -1,26 +1,16 @@
 // home_page.dart
 
-import 'dart:async';
-import 'dart:convert';
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:bijak_app/data/dummy_data.dart';
 import 'package:bijak_app/module/home/controller/home_controller.dart';
 import 'package:bijak_app/module/home/screen/cart_page.dart';
 import 'package:bijak_app/module/home/screen/product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
 
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-
+class HomePage extends StatelessWidget {
   HomeController homeController = Get.put(HomeController());
 
   @override
@@ -30,32 +20,31 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Colors.green,
         leading: IconButton(
-          icon: Icon(Icons.person),
+          icon: const Icon(Icons.person),
           onPressed: () {},
-          padding: EdgeInsets.only(left: 16.0),
+          padding: const EdgeInsets.only(left: 16.0),
         ),
-        title: Text('App Name', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+        title: const Text('App Name', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
             onPressed: () {},
-            padding: EdgeInsets.only(right: 16.0),
+            padding: const EdgeInsets.only(right: 16.0),
           ),
         ],
       ),
-      body: homeController.isLoading.value ? buildShimmer() : buildContent(screenWidth),
+      body: homeController.isLoading.value ? buildShimmer() : buildContent(screenWidth ,context),
       floatingActionButton: Visibility(
         visible: homeController.cartItems.isNotEmpty,
         child: FloatingActionButton(
           onPressed: () async {
             var result = await Get.to(() => CartPage(cartItems: homeController.cartItems));
-            print(result);
             if (result != null) {
                 homeController.cartItems.value = result;
               homeController.saveCartData();
             }
-          }, child: Icon(Icons.shopping_cart),),
+          }, child: const Icon(Icons.shopping_cart),),
       ),
     ));
   }
@@ -68,15 +57,15 @@ class _HomePageState extends State<HomePage> {
         children: [
           // Shimmer layout similar to the content layout
           buildShimmerContainer(height: 50.0),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           buildShimmerContainer(height: 150.0),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           buildShimmerContainer(height: 50.0),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           buildShimmerContainer(height: 100.0, isHorizontalList: true),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           buildShimmerContainer(height: 50.0),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           buildShimmerContainer(height: 150.0),
         ],
       ),
@@ -88,14 +77,13 @@ class _HomePageState extends State<HomePage> {
       height: height,
       color: Colors.white,
       margin: isHorizontalList
-          ? EdgeInsets.symmetric(vertical: 8.0)
-          : EdgeInsets.symmetric(horizontal: 16.0),
+          ? const EdgeInsets.symmetric(vertical: 8.0)
+          : const EdgeInsets.symmetric(horizontal: 16.0),
     );
   }
 
-  Widget buildContent(double screenWidth) {
+  Widget buildContent(double screenWidth,BuildContext context) {
     var height = MediaQuery.of(context).size.height;
-    print("height ${height}");
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -105,11 +93,11 @@ class _HomePageState extends State<HomePage> {
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search Here',
-                hintStyle: TextStyle(fontSize: 14.0, color: Colors.grey),
-                prefixIcon: Icon(Icons.search, color: Colors.grey),
+                hintStyle: const TextStyle(fontSize: 14.0, color: Colors.grey),
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide(color: Colors.black, width: 1.0),
+                  borderSide: const BorderSide(color: Colors.black, width: 1.0),
                 ),
                 filled: true,
                 fillColor: Colors.white,
@@ -118,7 +106,7 @@ class _HomePageState extends State<HomePage> {
           ),
 
           // Image Banners
-          Container(
+          SizedBox(
             height: screenWidth * 2 / 3,
             child: PageView.builder(
               controller: homeController.pageController,
@@ -133,14 +121,14 @@ class _HomePageState extends State<HomePage> {
           ),
 
           // Categories
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text('Categories', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
             ),
           ),
-          Container(
+          SizedBox(
             height: height/8,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -155,11 +143,11 @@ class _HomePageState extends State<HomePage> {
                         radius: 24.0,
                         backgroundImage: AssetImage(category.products[0].image),
                       ),
-                      SizedBox(height: 8.0),
+                      const SizedBox(height: 8.0),
                       Text(
                         category.name,
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -171,14 +159,14 @@ class _HomePageState extends State<HomePage> {
           ),
 
           // Recently Ordered
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text('Recently Ordered', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
             ),
           ),
-          Container(
+          SizedBox(
             height: height/3.5,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -190,7 +178,6 @@ class _HomePageState extends State<HomePage> {
                 return GestureDetector(
                   onTap: ()async{
                       var result = await Get.to(()=>ProductDetailPage(product: product));
-                      print("result ${result.toString()}");
                       if(result!=null){
                           homeController.cartItems.value = result;
                         homeController.saveCartData();
@@ -200,10 +187,10 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
                       width: 120.0,
-                      decoration: BoxDecoration(
+                      decoration:  BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(8.0),
-                        boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 3.0)],
+                        boxShadow: [const BoxShadow(color: Colors.grey, blurRadius: 3.0)],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,22 +205,22 @@ class _HomePageState extends State<HomePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
 
                               children: [
-                                Text(product.name, style: TextStyle(fontSize: 12.0), maxLines: 1),
-                                Text(product.weight, style: TextStyle(fontSize: 10.0, color: Colors.grey)),
-                                Text('\$${product.price}', style: TextStyle(fontSize: 10.0, color: Colors.grey)),
+                                Text(product.name, style: const TextStyle(fontSize: 12.0), maxLines: 1),
+                                Text(product.weight, style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
+                                Text('\$${product.price}', style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
                                 isInCart?
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     IconButton(
-                                      icon: Icon(Icons.remove),
+                                      icon: const Icon(Icons.remove),
                                       onPressed: () {
                                         homeController.removeFromCart(product);
                                       },
                                     ),
-                                    Text('${cartQuantity}'),
+                                    Text('$cartQuantity'),
                                     IconButton(
-                                      icon: Icon(Icons.add),
+                                      icon: const Icon(Icons.add),
                                       onPressed: () {
                                         homeController.addToCart(product);
                                       },
@@ -244,7 +231,7 @@ class _HomePageState extends State<HomePage> {
                                   alignment: Alignment.bottomRight,
                                   child: ElevatedButton(
                                     onPressed: () { homeController.addToCart(product);},
-                                    child: AutoSizeText('Add to cart',maxLines: 1,),
+                                    child: const AutoSizeText('Add to cart',maxLines: 1,),
                                   ),
                                 ),
                               ],
@@ -260,15 +247,15 @@ class _HomePageState extends State<HomePage> {
           ),
 
           // Seasonal Products
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text('Seasonal Products', style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold)),
             ),
           ),
           ListView.builder(
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: homeController.seasonalProducts.length,
             itemBuilder: (context, index) {
@@ -289,7 +276,7 @@ class _HomePageState extends State<HomePage> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(8.0),
-                      boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 3.0)],
+                      boxShadow: [const BoxShadow(color: Colors.grey, blurRadius: 3.0)],
                     ),
                     child: Row(
                       children: [
@@ -303,9 +290,9 @@ class _HomePageState extends State<HomePage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(product.name, style: TextStyle(fontSize: 12.0), maxLines: 1),
-                                Text(product.weight, style: TextStyle(fontSize: 10.0, color: Colors.grey)),
-                                Text('\$${product.price}', style: TextStyle(fontSize: 10.0, color: Colors.grey)),
+                                Text(product.name, style: const TextStyle(fontSize: 12.0), maxLines: 1),
+                                Text(product.weight, style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
+                                Text('\$${product.price}', style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
                                 isInCart?
                                 Align(
                                   alignment: Alignment.bottomRight,
@@ -313,14 +300,14 @@ class _HomePageState extends State<HomePage> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       IconButton(
-                                        icon: Icon(Icons.remove),
+                                        icon: const Icon(Icons.remove),
                                         onPressed: () {
                                           homeController.removeFromCart(product);
                                         },
                                       ),
-                                      Text('${cartQuantity}'),
+                                      Text('$cartQuantity'),
                                       IconButton(
-                                        icon: Icon(Icons.add),
+                                        icon: const Icon(Icons.add),
                                         onPressed: () {
                                           homeController.addToCart(product);
                                         },
@@ -332,7 +319,7 @@ class _HomePageState extends State<HomePage> {
                                   alignment: Alignment.bottomRight,
                                   child: ElevatedButton(
                                     onPressed: () { homeController.addToCart(product);},
-                                    child: AutoSizeText('Add to cart',maxLines: 1,),
+                                    child: const AutoSizeText('Add to cart',maxLines: 1,),
                                   ),
                                 ),
                               ],

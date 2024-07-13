@@ -1,34 +1,25 @@
-import 'dart:convert';
 
 import 'package:bijak_app/data/dummy_data.dart';
 import 'package:bijak_app/module/home/controller/cart_controller.dart';
 import 'package:bijak_app/module/home/screen/product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class CartPage extends StatefulWidget {
+class CartPage extends StatelessWidget {
   final List<Product> cartItems;
 
-  CartPage({required this.cartItems});
+  CartPage({super.key, required this.cartItems});
 
-  @override
-  State<CartPage> createState() => _CartPageState();
-}
-
-class _CartPageState extends State<CartPage> {
   CartController cartController = Get.put(CartController());
 
   @override
   Widget build(BuildContext context) {
-    double totalPrice = cartController.calculateTotalPrice();
-    print("totalPrice ${totalPrice}");
     return Obx(() => Scaffold(
       appBar: AppBar(
-        title: Text('Cart', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+        title: const Text('Cart', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Get.back(result: cartController.cartItems);
           },
@@ -47,12 +38,12 @@ class _CartPageState extends State<CartPage> {
                 Text(
 
                   'Total: \$${cartController.calculateTotalPrice()}',
-                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 ElevatedButton(
                   onPressed: cartController.placeOrder,
-                  child: Text('Place Order'),
+                  child: const Text('Place Order'),
                 ),
               ],
             ),
@@ -63,7 +54,7 @@ class _CartPageState extends State<CartPage> {
   }
 
   Widget buildEmptyCart() {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -91,14 +82,14 @@ class _CartPageState extends State<CartPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                icon: Icon(Icons.remove),
+                icon: const Icon(Icons.remove),
                 onPressed: () {
                   cartController.removeFromCart(product);
                 },
               ),
               Text('${product.quantity}'),
               IconButton(
-                icon: Icon(Icons.add),
+                icon: const Icon(Icons.add),
                 onPressed: () {
                   cartController.addToCart(product);
                 },

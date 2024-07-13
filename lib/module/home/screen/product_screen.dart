@@ -2,14 +2,12 @@ import 'package:bijak_app/data/dummy_data.dart';
 import 'package:bijak_app/module/home/controller/product_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-// Import the ProductController
 
 class ProductDetailPage extends StatelessWidget {
   final Product product;
 
-  ProductDetailPage({required this.product});
+  const ProductDetailPage({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +15,10 @@ class ProductDetailPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Product Detail', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
+        title: const Text('Product Detail', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Get.back(result: productController.cartItems);
           },
@@ -32,7 +30,7 @@ class ProductDetailPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
+              SizedBox(
                 height: MediaQuery.of(context).size.height / 2,
                 width: double.infinity,
                 child: AspectRatio(
@@ -41,7 +39,7 @@ class ProductDetailPage extends StatelessWidget {
                 ),
               ),
               Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(16.0),
                     topRight: Radius.circular(16.0),
@@ -50,35 +48,35 @@ class ProductDetailPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 8.0),
+                    const SizedBox(height: 8.0),
                     Text(
                       product.name,
-                      style: TextStyle(fontSize: 12.0, color: Colors.black),
+                      style: const TextStyle(fontSize: 12.0, color: Colors.black),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 4.0),
+                    const SizedBox(height: 4.0),
                     Text(
                       product.description,
-                      style: TextStyle(fontSize: 10.0, color: Colors.grey),
+                      style: const TextStyle(fontSize: 10.0, color: Colors.grey),
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 4.0),
+                    const SizedBox(height: 4.0),
                     Text(
                       product.weight,
-                      style: TextStyle(fontSize: 10.0, color: Colors.grey),
+                      style: const TextStyle(fontSize: 10.0, color: Colors.grey),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 4.0),
+                    const SizedBox(height: 4.0),
                     Text(
                       '\$${product.price}',
-                      style: TextStyle(fontSize: 10.0, color: Colors.grey),
+                      style: const TextStyle(fontSize: 10.0, color: Colors.grey),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 4.0),
+                    const SizedBox(height: 4.0),
                     Obx(() {
                       int quantity = productController.getProductQuantity(product);
                       return Row(
@@ -86,12 +84,12 @@ class ProductDetailPage extends StatelessWidget {
                         children: [
                           if (quantity > 0) ...[
                             IconButton(
-                              icon: Icon(Icons.remove),
+                              icon: const Icon(Icons.remove),
                               onPressed: () => productController.removeFromCart(product),
                             ),
                             Text('$quantity'),
                             IconButton(
-                              icon: Icon(Icons.add),
+                              icon: const Icon(Icons.add),
                               onPressed: () => productController.addToCart(product),
                             ),
                           ] else ...[
@@ -100,7 +98,7 @@ class ProductDetailPage extends StatelessWidget {
                                 productController.addToCart(product);
                                 Get.snackbar('Cart', 'Item added to cart', snackPosition: SnackPosition.BOTTOM);
                               },
-                              child: Text('Add to cart'),
+                              child: const Text('Add to cart'),
                             ),
                           ],
                         ],

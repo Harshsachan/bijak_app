@@ -1,24 +1,22 @@
 import 'dart:async';
-import 'dart:convert';
+
 import 'package:bijak_app/data/dummy_data.dart';
+import 'package:bijak_app/module/home/controller/base_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class HomeController extends GetxController {
+class HomeController extends BaseController {
   final PageController pageController = PageController();
   Timer? timer;
   var isLoading = true.obs;
   var categories = <Category>[].obs;
   var recentlyOrdered = <Product>[].obs;
   var seasonalProducts = <Product>[].obs;
-  var cartItems = <Product>[].obs;
 
   @override
   void onInit() {
     super.onInit();
     startAutoScroll();
-    loadCartData();
     // Simulate a delay to fetch data
     Future.delayed(Duration(seconds: 1), () {
       isLoading.value = false;
@@ -30,21 +28,6 @@ class HomeController extends GetxController {
           .take(5)
           .toList();
     });
-  }
-
-  Future<void> loadCartData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? cartJson = prefs.getString('cartItems');
-    if (cartJson != null) {
-      List<dynamic> decodedCart = jsonDecode(cartJson);
-      cartItems.value = decodedCart.map((item) => Product.fromJson(item)).toList();
-    }
-  }
-
-  Future<void> saveCartData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String cartJson = jsonEncode(cartItems.map((item) => item.toJson()).toList());
-    await prefs.setString('cartItems', cartJson);
   }
 
   @override
@@ -68,44 +51,5 @@ class HomeController extends GetxController {
         );
       }
     });
-  }
-
-  void removeFromCart(Product product) {
-    for (int i = 0; i < cartItems.length; i++) {
-      if (cartItems[i].id == product.id) {
-        if (cartItems[i].quantity > 1) {
-          cartItems[i].quantity--;
-        } else {
-          cartItems.removeAt(i);
-        }
-        break;
-      }
-    }
-    saveCartData();
-    cartItems.refresh(); // Ensure UI refresh after modification
-  }
-
-  void addToCart(Product product) {
-    bool found = false;
-    for (int i = 0; i < cartItems.length; i++) {
-      if (cartItems[i].id == product.id) {
-        cartItems[i].quantity++;
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      cartItems.add(Product(
-        id: product.id,
-        name: product.name,
-        weight: product.weight,
-        image: product.image,
-        price: product.price,
-        description: product.description,
-        quantity: 1,
-      ));
-    }
-    saveCartData();
-    cartItems.refresh(); // Ensure UI refresh after modification
   }
 }
