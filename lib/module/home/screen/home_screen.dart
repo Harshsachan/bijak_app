@@ -209,7 +209,7 @@ class HomePage extends StatelessWidget {
           int cartQuantity = isInCart ? homeController.cartItems.firstWhere((item) => item.id == product.id).quantity : 0;
           return GestureDetector(
             onTap: ()async{
-              var result = await Get.to(()=>ProductDetailPage(product: product));
+              var result = await Get.to(()=>ProductDetailPage(product: product),transition: Transition.rightToLeftWithFade);
               if(result!=null){
                 homeController.cartItems.value = result;
                 homeController.saveCartData();
@@ -292,7 +292,7 @@ class HomePage extends StatelessWidget {
         int cartQuantity = isInCart ? homeController.cartItems.firstWhere((item) => item.id == product.id).quantity : 0;
         return GestureDetector(
           onTap: () async{
-            var result = await Get.to(()=>ProductDetailPage(product: product));
+            var result = await Get.to(()=>ProductDetailPage(product: product),transition: Transition.rightToLeftWithFade);
             if(result!=null){
               homeController.cartItems.value = result;
               homeController.saveCartData();
