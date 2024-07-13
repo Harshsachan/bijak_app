@@ -1,9 +1,9 @@
 // main.dart
 
-import 'package:bijak_app/data/dummy_data.dart';
-import 'package:bijak_app/module/home/controller/category_controller.dart';
-import 'package:bijak_app/module/home/screen/home_screen.dart';
-import 'package:bijak_app/module/profile/profile_screen.dart';
+import 'package:Bijak/data/dummy_data.dart';
+import 'package:Bijak/module/home/controller/category_controller.dart';
+import 'package:Bijak/module/home/screen/home_screen.dart';
+import 'package:Bijak/module/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

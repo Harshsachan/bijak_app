@@ -1,8 +1,8 @@
 
-import 'package:bijak_app/data/dummy_data.dart';
-import 'package:bijak_app/module/commons/widget/app_bar.dart';
-import 'package:bijak_app/module/cart/controller/cart_controller.dart';
-import 'package:bijak_app/module/product/screen/product_screen.dart';
+import 'package:Bijak/data/dummy_data.dart';
+import 'package:Bijak/module/commons/widget/app_bar.dart';
+import 'package:Bijak/module/cart/controller/cart_controller.dart';
+import 'package:Bijak/module/product/screen/product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -32,6 +32,7 @@ class CartPage extends StatelessWidget {
             ? buildEmptyCart()
             : Column(
           children: [
+            SizedBox(height: 10,),
             Expanded(child: buildCartList()),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -78,31 +79,31 @@ class CartPage extends StatelessWidget {
       itemCount: cartController.cartItems.length,
       itemBuilder: (context, index) {
         Product product = cartController.cartItems[index];
-        return ListTile(
-          leading: Image.asset(product.image, width: 60.0, height: 60.0, fit: BoxFit.cover),
-          title: Text(product.name),
-          subtitle: Text('\$${product.price}'),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.remove),
-                onPressed: () {
-                  cartController.removeFromCart(product);
-                },
-              ),
-              Text('${product.quantity}'),
-              IconButton(
-                icon: const Icon(Icons.add),
-                onPressed: () {
-                  cartController.addToCart(product);
-                },
-              ),
-            ],
+        return Card(
+          elevation: 3,
+          child: ListTile(
+            leading: Image.asset(product.image, width: 60.0, height: 60.0, fit: BoxFit.cover),
+            title: Text(product.name),
+            subtitle: Text('\$${product.price}'),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.remove),
+                  onPressed: () {
+                    cartController.removeFromCart(product);
+                  },
+                ),
+                Text('${product.quantity}'),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: () {
+                    cartController.addToCart(product);
+                  },
+                ),
+              ],
+            ),
           ),
-          onTap: () {
-            Get.to(() => ProductDetailPage(product: product));
-          },
         );
       },
     );

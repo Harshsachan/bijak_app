@@ -22,7 +22,7 @@ class AfterOrderState extends State<AfterOrder> {
       _confettiController.stop();
     });
     // Delay before navigating back to the main screen
-    Timer(const Duration(seconds: 3), () {
+    Timer(const Duration(seconds: 2), () {
       Get.back();
     });
   }
@@ -52,30 +52,33 @@ class AfterOrderState extends State<AfterOrder> {
 
   @override
   Widget build(BuildContext context) {
-    return ConfettiWidget(
-      confettiController: _confettiController,
-      blastDirectionality: BlastDirectionality.explosive,
-      shouldLoop: true,
-      colors: const [
-        Colors.green,
-        Colors.blue,
-        Colors.pink,
-        Colors.orange,
-        Colors.purple
-      ],
-      createParticlePath: drawStar,
-      child: const Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.check_circle, size: 100, color: Colors.green),
-              SizedBox(height: 16.0),
-              Text(
-                'Order Placed Successfully!',
-                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-              ),
-            ],
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: ConfettiWidget(
+        confettiController: _confettiController,
+        blastDirectionality: BlastDirectionality.explosive,
+        shouldLoop: true,
+        colors: const [
+          Colors.green,
+          Colors.blue,
+          Colors.pink,
+          Colors.orange,
+          Colors.purple
+        ],
+        createParticlePath: drawStar,
+        child: const Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.check_circle, size: 100, color: Colors.green),
+                SizedBox(height: 16.0),
+                Text(
+                  'Order Placed Successfully!',
+                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
           ),
         ),
       ),

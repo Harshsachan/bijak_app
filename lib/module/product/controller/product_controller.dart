@@ -1,4 +1,4 @@
-import 'package:bijak_app/module/commons/controller/base_controller.dart';
+import 'package:Bijak/module/commons/controller/base_controller.dart';
 import 'package:get/get.dart';
 
 class ProductController extends BaseController {

@@ -1,6 +1,5 @@
-import 'package:bijak_app/module/commons/controller/base_controller.dart';
-import 'package:bijak_app/module/afterOrder/after_order.dart';
-import 'package:flutter/material.dart';
+import 'package:Bijak/module/commons/controller/base_controller.dart';
+import 'package:Bijak/module/afterOrder/after_order.dart';
 import 'package:get/get.dart';
 
 class CartController extends BaseController {

@@ -2,10 +2,10 @@
 
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:bijak_app/module/commons/widget/app_bar.dart';
-import 'package:bijak_app/module/home/controller/home_controller.dart';
-import 'package:bijak_app/module/cart/screen/cart_page.dart';
-import 'package:bijak_app/module/product/screen/product_screen.dart';
+import 'package:Bijak/module/commons/widget/app_bar.dart';
+import 'package:Bijak/module/home/controller/home_controller.dart';
+import 'package:Bijak/module/cart/screen/cart_page.dart';
+import 'package:Bijak/module/product/screen/product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
@@ -120,6 +120,8 @@ class HomePage extends StatelessWidget {
           ),
           buildSeasonalProduct(),
 
+          SizedBox(height: height/8),
+
         ],
       ),
     );
@@ -196,7 +198,7 @@ class HomePage extends StatelessWidget {
 
   Widget buildRecentOrder(double height,double width){
     return SizedBox(
-      height: height/4,
+      height: height/3.7,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: homeController.recentlyOrdered.length,
