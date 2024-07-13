@@ -1,5 +1,5 @@
-import 'package:bijak_app/module/home/controller/base_controller.dart';
-import 'package:bijak_app/module/home/screen/after_order.dart';
+import 'package:bijak_app/module/commons/controller/base_controller.dart';
+import 'package:bijak_app/module/afterOrder/after_order.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

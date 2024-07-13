@@ -1,8 +1,8 @@
 
 import 'package:bijak_app/data/dummy_data.dart';
-import 'package:bijak_app/module/commons/app_bar.dart';
-import 'package:bijak_app/module/home/controller/cart_controller.dart';
-import 'package:bijak_app/module/home/screen/product_screen.dart';
+import 'package:bijak_app/module/commons/widget/app_bar.dart';
+import 'package:bijak_app/module/cart/controller/cart_controller.dart';
+import 'package:bijak_app/module/product/screen/product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

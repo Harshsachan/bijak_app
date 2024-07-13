@@ -2,10 +2,10 @@
 
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:bijak_app/module/commons/app_bar.dart';
+import 'package:bijak_app/module/commons/widget/app_bar.dart';
 import 'package:bijak_app/module/home/controller/home_controller.dart';
-import 'package:bijak_app/module/home/screen/cart_page.dart';
-import 'package:bijak_app/module/home/screen/product_screen.dart';
+import 'package:bijak_app/module/cart/screen/cart_page.dart';
+import 'package:bijak_app/module/product/screen/product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
