@@ -1,8 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:bijak_app/main.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -26,7 +23,6 @@ class AfterOrderState extends State<AfterOrder> {
     });
     // Delay before navigating back to the main screen
     Timer(const Duration(seconds: 3), () {
-
       Get.back();
     });
   }
@@ -68,11 +64,11 @@ class AfterOrderState extends State<AfterOrder> {
         Colors.purple
       ],
       createParticlePath: drawStar,
-      child: Scaffold(
+      child: const Scaffold(
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
+            children: [
               Icon(Icons.check_circle, size: 100, color: Colors.green),
               SizedBox(height: 16.0),
               Text(

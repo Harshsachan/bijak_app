@@ -2,6 +2,7 @@
 
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:bijak_app/module/commons/app_bar.dart';
 import 'package:bijak_app/module/home/controller/home_controller.dart';
 import 'package:bijak_app/module/home/screen/cart_page.dart';
 import 'package:bijak_app/module/home/screen/product_screen.dart';
@@ -17,19 +18,15 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     return Obx(() => Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green,
-        leading: IconButton(
-          icon: const Icon(Icons.person ,color: Colors.white,),
-          onPressed: () {},
-          padding: const EdgeInsets.only(left: 16.0),
-        ),
-        title: const Text('BIJAK', style: TextStyle(fontSize: 16.0,color: Colors.white, fontWeight: FontWeight.bold)),
-        centerTitle: true,
+      appBar:CustomAppBar(
+        title: 'BIJAK',
+        leadingIcon: Icons.person,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout,color: Colors.white,),
-            onPressed: () {},
+            icon: const Icon(Icons.logout, color: Colors.white),
+            onPressed: () {
+              // Implement logout functionality
+            },
             padding: const EdgeInsets.only(right: 16.0),
           ),
         ],

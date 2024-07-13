@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bijak_app/data/dummy_data.dart';
+import 'package:bijak_app/module/commons/app_bar.dart';
 import 'package:bijak_app/module/home/controller/product_controller.dart';
 import 'package:bijak_app/module/home/screen/cart_page.dart';
 import 'package:flutter/material.dart';
@@ -15,41 +16,40 @@ class ProductDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final ProductController productController = Get.put(ProductController());
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green,
-        title: const Text(
-          'Product Detail',
-          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
+    return WillPopScope(
+      onWillPop: () async {
+        Get.back(result: productController.cartItems);
+        return false; // Returning false prevents the default back navigation
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(
+          title: 'Product Detail',
+          leadingIcon: Icons.arrow_back,
+          leadingOnPressed: () {
             Get.back(result: productController.cartItems);
           },
         ),
+        body: Obx(() {
+          if (productController.isLoading.value) {
+            return _buildShimmer();
+          } else {
+            return _buildProductDetail(context, product, productController);
+          }
+        }),
+        floatingActionButton: Obx(() => Visibility(
+          visible: productController.cartItems.isNotEmpty,
+          child: FloatingActionButton(
+            onPressed: () async {
+              var result = await Get.to(() => CartPage(cartItems: productController.cartItems));
+              if (result != null) {
+                productController.cartItems.value = result;
+                productController.saveCartData();
+              }
+            },
+            child: const Icon(Icons.shopping_cart),
+          ),
+        )),
       ),
-      body: Obx(() {
-        if (productController.isLoading.value) {
-          return _buildShimmer();
-        } else {
-          return _buildProductDetail(context, product, productController);
-        }
-      }),
-      floatingActionButton: Obx(() => Visibility(
-        visible: productController.cartItems.isNotEmpty,
-        child: FloatingActionButton(
-          onPressed: () async {
-            var result = await Get.to(() => CartPage(cartItems: productController.cartItems));
-            if (result != null) {
-              productController.cartItems.value = result;
-              productController.saveCartData();
-            }
-          },
-          child: const Icon(Icons.shopping_cart),
-        ),
-      )),
     );
   }
 

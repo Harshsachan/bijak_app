@@ -1,5 +1,6 @@
 
 import 'package:bijak_app/data/dummy_data.dart';
+import 'package:bijak_app/module/commons/app_bar.dart';
 import 'package:bijak_app/module/home/controller/cart_controller.dart';
 import 'package:bijak_app/module/home/screen/product_screen.dart';
 import 'package:flutter/material.dart';
@@ -14,43 +15,44 @@ class CartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green,
-
-        title: const Text('Cart', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold,color: Colors.white)),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back,color: Colors.white,),
-          onPressed: () {
+    return Obx(() => WillPopScope(
+      onWillPop: () async {
+        Get.back(result: cartController.cartItems);
+        return false; // Returning false prevents the default back navigation
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(
+          title: 'Cart',
+          leadingIcon: Icons.arrow_back,
+          leadingOnPressed: () {
             Get.back(result: cartController.cartItems);
           },
         ),
-      ),
-      body: cartController.cartItems.isEmpty
-          ? buildEmptyCart()
-          : Column(
-        children: [
-          Expanded(child: buildCartList()),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
+        body: cartController.cartItems.isEmpty
+            ? buildEmptyCart()
+            : Column(
+          children: [
+            Expanded(child: buildCartList()),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
 
-                  'Total: \$${cartController.calculateTotalPrice()}',
-                  style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: cartController.placeOrder,
-                  child: const Text('Place Order'),
-                ),
-              ],
+                    'Total: \$${cartController.calculateTotalPrice()}',
+                    style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: cartController.placeOrder,
+                    child: const Text('Place Order'),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     ));
   }
