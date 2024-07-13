@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'package:bijak_app/data/dummy_data.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class CartController extends GetxController {
+class ProductController extends GetxController {
   var cartItems = <Product>[].obs;
 
   @override
@@ -13,48 +12,19 @@ class CartController extends GetxController {
     _loadCartData();
   }
 
-  Future<void> _saveCartData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String cartJson = jsonEncode(cartItems.map((item) => item.toJson()).toList());
-    await prefs.setString('cartItems', cartJson);
-  }
-
   Future<void> _loadCartData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? cartJson = prefs.getString('cartItems');
     if (cartJson != null) {
-      List<dynamic> decodedList = jsonDecode(cartJson);
-      cartItems.value = decodedList.map((item) => Product.fromJson(item)).toList();
+      List<dynamic> decodedCart = jsonDecode(cartJson);
+      cartItems.value = decodedCart.map((item) => Product.fromJson(item)).toList();
     }
   }
 
-  double calculateTotalPrice() {
-    double total = cartItems.fold(0, (sum, item) => sum + (item.price * item.quantity));
-    return double.parse(total.toStringAsFixed(2));
-  }
-
-
-  void clearCart() {
-    cartItems.clear();
-    _saveCartData();
-  }
-
-  void placeOrder() {
-    clearCart();
-    Get.dialog(
-      AlertDialog(
-        title: Text('Order Placed'),
-        content: Text('Your order has been placed successfully!'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Get.back();
-            },
-            child: Text('OK'),
-          ),
-        ],
-      ),
-    );
+  Future<void> _saveCartData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String cartJson = jsonEncode(cartItems.map((item) => item.toJson()).toList());
+    await prefs.setString('cartItems', cartJson);
   }
 
   void addToCart(Product product) {
@@ -78,7 +48,7 @@ class CartController extends GetxController {
       ));
     }
     _saveCartData();
-    cartItems.refresh(); // Ensure UI refresh after modification
+    cartItems.refresh(); // Ensure UI updates
   }
 
   void removeFromCart(Product product) {
@@ -93,6 +63,15 @@ class CartController extends GetxController {
       }
     }
     _saveCartData();
-    cartItems.refresh(); // Ensure UI refresh after modification
+    cartItems.refresh(); // Ensure UI updates
+  }
+
+  int getProductQuantity(Product product) {
+    for (var item in cartItems) {
+      if (item.id == product.id) {
+        return item.quantity;
+      }
+    }
+    return 0;
   }
 }

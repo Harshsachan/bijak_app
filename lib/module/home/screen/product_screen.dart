@@ -1,97 +1,19 @@
-import 'dart:convert';
 import 'package:bijak_app/data/dummy_data.dart';
+import 'package:bijak_app/module/home/controller/product_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ProductDetailPage extends StatefulWidget {
+// Import the ProductController
+
+class ProductDetailPage extends StatelessWidget {
   final Product product;
 
   ProductDetailPage({required this.product});
 
   @override
-  State<ProductDetailPage> createState() => _ProductDetailPageState();
-}
-
-class _ProductDetailPageState extends State<ProductDetailPage> {
-  List<Product> cartItems = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCartData();
-  }
-
-  Future<void> _loadCartData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? cartJson = prefs.getString('cartItems');
-    if (cartJson != null) {
-      List<dynamic> decodedCart = jsonDecode(cartJson);
-      setState(() {
-        cartItems = decodedCart.map((item) => Product.fromJson(item)).toList();
-      });
-    }
-  }
-
-  void _addToCart(Product product) {
-    setState(() {
-      bool found = false;
-      for (int i = 0; i < cartItems.length; i++) {
-        if (cartItems[i].id == product.id) {
-          cartItems[i].quantity++;
-          found = true;
-          break;
-        }
-      }
-      if (!found) {
-        cartItems.add(Product(
-          id: product.id,
-          name: product.name,
-          weight: product.weight,
-          image: product.image,
-          price: product.price,
-          description: product.description,
-          quantity: 1,
-        ));
-      }
-    });
-    _saveCartData();
-  }
-
-  void _removeFromCart(Product product) {
-    setState(() {
-      for (int i = 0; i < cartItems.length; i++) {
-        if (cartItems[i].id == product.id) {
-          if (cartItems[i].quantity > 1) {
-            cartItems[i].quantity--;
-          } else {
-            cartItems.removeAt(i);
-          }
-          break;
-        }
-      }
-    });
-    _saveCartData();
-  }
-
-  Future<void> _saveCartData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String cartJson = jsonEncode(cartItems.map((item) => item.toJson()).toList());
-    await prefs.setString('cartItems', cartJson);
-  }
-
-  int _getProductQuantity(Product product) {
-    for (var item in cartItems) {
-      if (item.id == product.id) {
-        return item.quantity;
-      }
-    }
-    return 0;
-  }
-
-  @override
   Widget build(BuildContext context) {
-    int quantity = _getProductQuantity(widget.product);
+    final ProductController productController = Get.put(ProductController());
 
     return Scaffold(
       appBar: AppBar(
@@ -100,8 +22,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            print("object");
-            Get.back(result: cartItems);
+            Get.back(result: productController.cartItems);
           },
         ),
       ),
@@ -116,7 +37,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 width: double.infinity,
                 child: AspectRatio(
                   aspectRatio: 2 / 3,
-                  child: Image.asset(widget.product.image, fit: BoxFit.cover),
+                  child: Image.asset(product.image, fit: BoxFit.cover),
                 ),
               ),
               Container(
@@ -131,57 +52,60 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   children: [
                     SizedBox(height: 8.0),
                     Text(
-                      widget.product.name,
+                      product.name,
                       style: TextStyle(fontSize: 12.0, color: Colors.black),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(height: 4.0),
                     Text(
-                      widget.product.description,
+                      product.description,
                       style: TextStyle(fontSize: 10.0, color: Colors.grey),
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(height: 4.0),
                     Text(
-                      widget.product.weight,
+                      product.weight,
                       style: TextStyle(fontSize: 10.0, color: Colors.grey),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(height: 4.0),
                     Text(
-                      '\$${widget.product.price}',
+                      '\$${product.price}',
                       style: TextStyle(fontSize: 10.0, color: Colors.grey),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(height: 4.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        if (quantity > 0) ...[
-                          IconButton(
-                            icon: Icon(Icons.remove),
-                            onPressed: () => _removeFromCart(widget.product),
-                          ),
-                          Text('$quantity'),
-                          IconButton(
-                            icon: Icon(Icons.add),
-                            onPressed: () => _addToCart(widget.product),
-                          ),
-                        ] else ...[
-                          ElevatedButton(
-                            onPressed: () {
-                              _addToCart(widget.product);
-                              Get.snackbar('Cart', 'Item added to cart', snackPosition: SnackPosition.BOTTOM);
-                            },
-                            child: Text('Add to cart'),
-                          ),
+                    Obx(() {
+                      int quantity = productController.getProductQuantity(product);
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          if (quantity > 0) ...[
+                            IconButton(
+                              icon: Icon(Icons.remove),
+                              onPressed: () => productController.removeFromCart(product),
+                            ),
+                            Text('$quantity'),
+                            IconButton(
+                              icon: Icon(Icons.add),
+                              onPressed: () => productController.addToCart(product),
+                            ),
+                          ] else ...[
+                            ElevatedButton(
+                              onPressed: () {
+                                productController.addToCart(product);
+                                Get.snackbar('Cart', 'Item added to cart', snackPosition: SnackPosition.BOTTOM);
+                              },
+                              child: Text('Add to cart'),
+                            ),
+                          ],
                         ],
-                      ],
-                    ),
+                      );
+                    }),
                   ],
                 ),
               ),

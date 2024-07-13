@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bijak_app/data/dummy_data.dart';
+import 'package:bijak_app/module/home/controller/cart_controller.dart';
 import 'package:bijak_app/module/home/screen/product_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,110 +17,24 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  List<Product> cartItems = [];
-
-  @override
-  void initState() {
-    super.initState();
-    cartItems = List.from(widget.cartItems);
-    _loadCartData();
-  }
-
-  Future<void> _saveCartData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String cartJson = jsonEncode(cartItems.map((item) => item.toJson()).toList());
-    await prefs.setString('cartItems', cartJson);
-  }
-
-  Future<void> _loadCartData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? cartJson = prefs.getString('cartItems');
-    if (cartJson != null) {
-      List<dynamic> decodedList = jsonDecode(cartJson);
-      setState(() {
-        cartItems = decodedList.map((item) => Product.fromJson(item)).toList();
-      });
-    }
-  }
-
-  double _calculateTotalPrice() {
-    return cartItems.fold(0, (total, current) => total + (current.price * current.quantity));
-  }
-
-  void _clearCart() {
-    setState(() {
-      cartItems.clear();
-    });
-    _saveCartData();
-  }
-
-  void _placeOrder() {
-    // Clear the cart and save
-    _clearCart();
-
-    // Show a confirmation dialog or message
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Order Placed'),
-        content: Text('Your order has been placed successfully!'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Get.back();
-            },
-            child: Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void addToCart(Product product) {
-    for (int i = 0; i < cartItems.length; i++) {
-      if (cartItems[i].id == product.id) {
-        setState(() {
-          cartItems[i].quantity++;
-        });
-        _saveCartData();
-        break;
-      }
-    }
-  }
-
-  void removeFromCart(Product product) {
-    for (int i = 0; i < cartItems.length; i++) {
-      if (cartItems[i].id == product.id) {
-        setState(() {
-          if (cartItems[i].quantity > 1) {
-            cartItems[i].quantity--;
-          } else {
-            cartItems.removeAt(i);
-          }
-        });
-        _saveCartData();
-        break;
-      }
-    }
-  }
+  CartController cartController = Get.put(CartController());
 
   @override
   Widget build(BuildContext context) {
-    double totalPrice = _calculateTotalPrice();
-
-    return Scaffold(
+    double totalPrice = cartController.calculateTotalPrice();
+    print("totalPrice ${totalPrice}");
+    return Obx(() => Scaffold(
       appBar: AppBar(
         title: Text('Cart', style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold)),
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Get.back(result: cartItems);
+            Get.back(result: cartController.cartItems);
           },
         ),
       ),
-      body: cartItems.isEmpty
+      body: cartController.cartItems.isEmpty
           ? buildEmptyCart()
           : Column(
         children: [
@@ -130,12 +45,13 @@ class _CartPageState extends State<CartPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'Total: \$${totalPrice.toStringAsFixed(2)}',
+
+                  'Total: \$${cartController.calculateTotalPrice()}',
                   style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 16.0),
                 ElevatedButton(
-                  onPressed: _placeOrder,
+                  onPressed: cartController.placeOrder,
                   child: Text('Place Order'),
                 ),
               ],
@@ -143,7 +59,7 @@ class _CartPageState extends State<CartPage> {
           ),
         ],
       ),
-    );
+    ));
   }
 
   Widget buildEmptyCart() {
@@ -164,9 +80,9 @@ class _CartPageState extends State<CartPage> {
 
   Widget buildCartList() {
     return ListView.builder(
-      itemCount: cartItems.length,
+      itemCount: cartController.cartItems.length,
       itemBuilder: (context, index) {
-        Product product = cartItems[index];
+        Product product = cartController.cartItems[index];
         return ListTile(
           leading: Image.asset(product.image, width: 60.0, height: 60.0, fit: BoxFit.cover),
           title: Text(product.name),
@@ -177,14 +93,14 @@ class _CartPageState extends State<CartPage> {
               IconButton(
                 icon: Icon(Icons.remove),
                 onPressed: () {
-                  removeFromCart(product);
+                  cartController.removeFromCart(product);
                 },
               ),
               Text('${product.quantity}'),
               IconButton(
                 icon: Icon(Icons.add),
                 onPressed: () {
-                  addToCart(product);
+                  cartController.addToCart(product);
                 },
               ),
             ],

@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bijak_app/data/dummy_data.dart';
+import 'package:bijak_app/module/home/controller/home_controller.dart';
 import 'package:bijak_app/module/home/screen/cart_page.dart';
 import 'package:bijak_app/module/home/screen/product_screen.dart';
 import 'package:flutter/material.dart';
@@ -19,133 +20,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final PageController _pageController = PageController();
-  Timer? _timer;
-  bool _isLoading = true;
-  List<Category> categories = [];
-  List<Product> recentlyOrdered = [];
-  List<Product> seasonalProducts = [];
-  List<Product> cartItems = [];
 
-
-  @override
-  void initState() {
-    super.initState();
-    _startAutoScroll();
-    _loadCartData();
-    // Simulate a delay to fetch data
-    Future.delayed(Duration(seconds: 5), () {
-      setState(() {
-        _isLoading = false;
-        categories = dummyData;
-        recentlyOrdered = dummyData.expand((category) => category.products).take(5).toList();
-        seasonalProducts = dummyData
-            .firstWhere((category) => category.name == 'Fruits')
-            .products
-            .take(5)
-            .toList();
-        // seasonalProducts = dummyData.expand((category) => category.products).take(5).toList();
-      });
-    });
-
-  }
-
-  Future<void> _loadCartData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? cartJson = prefs.getString('cartItems');
-    if (cartJson != null) {
-      List<dynamic> decodedCart = jsonDecode(cartJson);
-      setState(() {
-        cartItems = decodedCart.map((item) => Product.fromJson(item)).toList();
-      });
-    }
-  }
-
-  Future<void> _saveCartData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String cartJson = jsonEncode(cartItems.map((item) => item.toJson()).toList());
-    await prefs.setString('cartItems', cartJson);
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    _pageController.dispose();
-    super.dispose();
-  }
-
-
-  void _startAutoScroll() {
-    _timer = Timer.periodic(Duration(seconds: 3), (Timer timer) {
-      if (_pageController.hasClients) {
-        int nextPage = (_pageController.page?.round() ?? 0) + 1;
-        if (nextPage >= 3) {
-          nextPage = 0;
-        }
-        _pageController.animateToPage(
-          nextPage,
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeIn,
-        );
-      }
-    });
-  }
-
-  void removeFromCart(Product product) {
-    for (int i = 0; i < cartItems.length; i++) {
-      if (cartItems[i].id == product.id) {
-        if (cartItems[i].quantity > 1) {
-          setState(() {
-            cartItems[i].quantity--;
-          });
-        } else {
-          setState(() {
-            cartItems.removeAt(i);
-          });
-        }
-        break;
-      }
-    }
-    setState(() {
-    });
-    _saveCartData();
-  }
-
-  void addToCart(Product product) {
-    bool found = false;
-    for (int i = 0; i < cartItems.length; i++) {
-      if (cartItems[i].id == product.id) {
-        print("print - ${cartItems[i].quantity}");
-        setState(() {
-          cartItems[i].quantity++;
-        });
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      setState(() {
-        cartItems.add(Product(
-          id: product.id,
-          name: product.name,
-          weight: product.weight,
-          image: product.image,
-          price: product.price,
-          description: product.description,
-          quantity: 1,
-        ));
-      });
-    }
-    setState(() {
-    });
-    _saveCartData();
-    // updateMiniCartNudge();
-  }
+  HomeController homeController = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    return Scaffold(
+    return Obx(() => Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
         leading: IconButton(
@@ -163,23 +44,22 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: _isLoading ? buildShimmer() : buildContent(screenWidth),
+      body: homeController.isLoading.value ? buildShimmer() : buildContent(screenWidth),
       floatingActionButton: Visibility(
-        visible: cartItems.isNotEmpty,
+        visible: homeController.cartItems.isNotEmpty,
         child: FloatingActionButton(
           onPressed: () async {
-            var result = await Get.to(() => CartPage(cartItems: cartItems));
+            var result = await Get.to(() => CartPage(cartItems: homeController.cartItems));
             print(result);
             if (result != null) {
               setState(() {
-                print(cartItems.length);
-                cartItems = result;
+                homeController.cartItems = result;
               });
-              _saveCartData();
+              homeController.saveCartData();
             }
           }, child: Icon(Icons.shopping_cart),),
       ),
-    );
+    ));
   }
 
   Widget buildShimmer() {
@@ -243,7 +123,7 @@ class _HomePageState extends State<HomePage> {
           Container(
             height: screenWidth * 2 / 3,
             child: PageView.builder(
-              controller: _pageController,
+              controller: homeController.pageController,
               itemCount: 3,
               itemBuilder: (context, index) {
                 return Padding(
@@ -266,9 +146,9 @@ class _HomePageState extends State<HomePage> {
             height: height/8,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: categories.length,
+              itemCount: homeController.categories.length,
               itemBuilder: (context, index) {
-                final category = categories[index];
+                final category = homeController.categories[index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Column(
@@ -304,20 +184,20 @@ class _HomePageState extends State<HomePage> {
             height: height/3.5,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: recentlyOrdered.length,
+              itemCount: homeController.recentlyOrdered.length,
               itemBuilder: (context, index) {
-                final product = recentlyOrdered[index];
-                bool isInCart = cartItems.any((item) => item.id == product.id);
-                int cartQuantity = isInCart ? cartItems.firstWhere((item) => item.id == product.id).quantity : 0;
+                final product = homeController.recentlyOrdered[index];
+                bool isInCart = homeController.cartItems.any((item) => item.id == product.id);
+                int cartQuantity = isInCart ? homeController.cartItems.firstWhere((item) => item.id == product.id).quantity : 0;
                 return GestureDetector(
                   onTap: ()async{
                       var result = await Get.to(()=>ProductDetailPage(product: product));
+                      print("result ${result.toString()}");
                       if(result!=null){
                         setState(() {
-                          print(cartItems.length);
-                          cartItems = result;
+                          homeController.cartItems = result;
                         });
-                        _saveCartData();
+                        homeController.saveCartData();
                       }
                   },
                   child: Padding(
@@ -352,22 +232,22 @@ class _HomePageState extends State<HomePage> {
                                     IconButton(
                                       icon: Icon(Icons.remove),
                                       onPressed: () {
-                                        removeFromCart(product);
+                                        homeController.removeFromCart(product);
                                       },
                                     ),
                                     Text('${cartQuantity}'),
                                     IconButton(
                                       icon: Icon(Icons.add),
                                       onPressed: () {
-                                        addToCart(product);
+                                        homeController.addToCart(product);
                                       },
                                     ),
                                   ],
-                                ):
+                                ) :
                                 Align(
                                   alignment: Alignment.bottomRight,
                                   child: ElevatedButton(
-                                    onPressed: () { addToCart(product);},
+                                    onPressed: () { homeController.addToCart(product);},
                                     child: AutoSizeText('Add to cart',maxLines: 1,),
                                   ),
                                 ),
@@ -394,20 +274,19 @@ class _HomePageState extends State<HomePage> {
           ListView.builder(
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
-            itemCount: seasonalProducts.length,
+            itemCount: homeController.seasonalProducts.length,
             itemBuilder: (context, index) {
-              final product = seasonalProducts[index];
-              bool isInCart = cartItems.any((item) => item.id == product.id);
-              int cartQuantity = isInCart ? cartItems.firstWhere((item) => item.id == product.id).quantity : 0;
+              final product = homeController.seasonalProducts[index];
+              bool isInCart = homeController.cartItems.any((item) => item.id == product.id);
+              int cartQuantity = isInCart ? homeController.cartItems.firstWhere((item) => item.id == product.id).quantity : 0;
               return GestureDetector(
                 onTap: () async{
                   var result = await Get.to(()=>ProductDetailPage(product: product));
                   if(result!=null){
                     setState(() {
-                      print(cartItems.length);
-                      cartItems = result;
+                      homeController.cartItems = result;
                     });
-                    _saveCartData();
+                    homeController.saveCartData();
                   }
                 },
                 child: Padding(
@@ -442,14 +321,14 @@ class _HomePageState extends State<HomePage> {
                                       IconButton(
                                         icon: Icon(Icons.remove),
                                         onPressed: () {
-                                          removeFromCart(product);
+                                          homeController.removeFromCart(product);
                                         },
                                       ),
                                       Text('${cartQuantity}'),
                                       IconButton(
                                         icon: Icon(Icons.add),
                                         onPressed: () {
-                                          addToCart(product);
+                                          homeController.addToCart(product);
                                         },
                                       ),
                                     ],
@@ -458,7 +337,7 @@ class _HomePageState extends State<HomePage> {
                                 Align(
                                   alignment: Alignment.bottomRight,
                                   child: ElevatedButton(
-                                    onPressed: () { addToCart(product);},
+                                    onPressed: () { homeController.addToCart(product);},
                                     child: AutoSizeText('Add to cart',maxLines: 1,),
                                   ),
                                 ),
