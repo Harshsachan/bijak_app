@@ -1,12 +1,16 @@
 // home_page.dart
 
 
+import 'package:Bijak/module/commons/widget/add_to_cart_btn.dart';
+import 'package:Bijak/module/commons/widget/inc_dec_btn.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:Bijak/module/commons/widget/app_bar.dart';
 import 'package:Bijak/module/home/controller/home_controller.dart';
 import 'package:Bijak/module/cart/screen/cart_page.dart';
 import 'package:Bijak/module/product/screen/product_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -196,29 +200,26 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget buildRecentOrder(double height,double width){
-    return SizedBox(
-      height: height/3.7,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: homeController.recentlyOrdered.length,
-        itemBuilder: (context, index) {
-          final product = homeController.recentlyOrdered[index];
+  Widget buildRecentOrder(double height, double width) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: homeController.recentlyOrdered.map((product) {
           bool isInCart = homeController.cartItems.any((item) => item.id == product.id);
           int cartQuantity = isInCart ? homeController.cartItems.firstWhere((item) => item.id == product.id).quantity : 0;
           return GestureDetector(
-            onTap: ()async{
-              var result = await Get.to(()=>ProductDetailPage(product: product),transition: Transition.rightToLeftWithFade);
-              if(result!=null){
+            onTap: () async {
+              var result = await Get.to(() => ProductDetailPage(product: product), transition: Transition.rightToLeftWithFade);
+              if (result != null) {
                 homeController.cartItems.value = result;
                 homeController.saveCartData();
               }
             },
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.only(top: 8.0,left:8.0 ,right: 8.0),
               child: Container(
-                width: width/3.3,
-                decoration:  BoxDecoration(
+                width: width / 3,
+                decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8.0),
                   boxShadow: [const BoxShadow(color: Colors.grey, blurRadius: 3.0)],
@@ -228,9 +229,8 @@ class HomePage extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child:  Image.asset(product.image, height: 96.0, width: double.infinity, fit: BoxFit.cover),
+                      child: Image.asset(product.image, height: 96.0, width: double.infinity, fit: BoxFit.cover),
                     ),
-                   
                     Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: Column(
@@ -239,34 +239,45 @@ class HomePage extends StatelessWidget {
                           Text(product.name, style: const TextStyle(fontSize: 12.0), maxLines: 1),
                           Text(product.weight, style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
                           Text('\$${product.price}', style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
-                          isInCart ?
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.remove),
-                                onPressed: () {
-                                  homeController.removeFromCart(product);
-                                },
-                              ),
-                              Text('$cartQuantity'),
-                              IconButton(
-                                icon: const Icon(Icons.add),
-                                onPressed: () {
-                                  homeController.addToCart(product);
-                                },
-                              ),
-                            ],
-                          ):
                           Align(
                             alignment: Alignment.bottomCenter,
-                            child: Container(
-                              child: ElevatedButton(
-                                onPressed: () { homeController.addToCart(product);},
-                                child: const AutoSizeText('Add to cart',maxLines: 1,),
-                              ),
+                            child: isInCart ?IncrementDecrementRow(
+                              cartQuantity: cartQuantity,
+                              onIncrement: () => homeController.addToCart(product),
+                              onDecrement: () => homeController.removeFromCart(product),
+                            ):AddToCartButton(
+                              onPressed: () => homeController.addToCart(product),
                             ),
                           ),
+                          // isInCart
+                          //     ? Row(
+                          //   mainAxisSize: MainAxisSize.min,
+                          //   children: [
+                          //     IconButton(
+                          //       icon: const Icon(Icons.remove),
+                          //       onPressed: () {
+                          //         homeController.removeFromCart(product);
+                          //       },
+                          //     ),
+                          //     Text('$cartQuantity'),
+                          //     IconButton(
+                          //       icon: const Icon(Icons.add),
+                          //       onPressed: () {
+                          //         homeController.addToCart(product);
+                          //       },
+                          //     ),
+                          //   ],
+                          // )
+                          //     : Align(
+                          //   alignment: Alignment.bottomCenter,
+                          //   child: ElevatedButton(
+                          //     onPressed: () {
+                          //       homeController.addToCart(product);
+                          //     },
+                          //     child: const AutoSizeText('Add to cart', maxLines: 1),
+                          //   ),
+                          // ),
+
                         ],
                       ),
                     ),
@@ -275,7 +286,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
           );
-        },
+        }).toList(),
       ),
     );
   }
@@ -320,35 +331,46 @@ class HomePage extends StatelessWidget {
                           Text(product.name, style: const TextStyle(fontSize: 12.0), maxLines: 1),
                           Text(product.weight, style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
                           Text('\$${product.price}', style: const TextStyle(fontSize: 10.0, color: Colors.grey)),
-                          isInCart?
                           Align(
                             alignment: Alignment.bottomRight,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.remove),
-                                  onPressed: () {
-                                    homeController.removeFromCart(product);
-                                  },
-                                ),
-                                Text('$cartQuantity'),
-                                IconButton(
-                                  icon: const Icon(Icons.add),
-                                  onPressed: () {
-                                    homeController.addToCart(product);
-                                  },
-                                ),
-                              ],
-                            ),
-                          ):
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: ElevatedButton(
-                              onPressed: () { homeController.addToCart(product);},
-                              child: const AutoSizeText('Add to cart',maxLines: 1,),
+                            child: isInCart ?IncrementDecrementRow(
+                              cartQuantity: cartQuantity,
+                              onIncrement: () => homeController.addToCart(product),
+                              onDecrement: () => homeController.removeFromCart(product),
+                            ):AddToCartButton(
+                              onPressed: () => homeController.addToCart(product),
                             ),
                           ),
+
+                          // isInCart?
+                          // Align(
+                          //   alignment: Alignment.bottomRight,
+                          //   child: Row(
+                          //     mainAxisSize: MainAxisSize.min,
+                          //     children: [
+                          //       IconButton(
+                          //         icon: const Icon(Icons.remove),
+                          //         onPressed: () {
+                          //           homeController.removeFromCart(product);
+                          //         },
+                          //       ),
+                          //       Text('$cartQuantity'),
+                          //       IconButton(
+                          //         icon: const Icon(Icons.add),
+                          //         onPressed: () {
+                          //           homeController.addToCart(product);
+                          //         },
+                          //       ),
+                          //     ],
+                          //   ),
+                          // ):
+                          // Align(
+                          //   alignment: Alignment.bottomRight,
+                          //   child: ElevatedButton(
+                          //     onPressed: () { homeController.addToCart(product);},
+                          //     child: const AutoSizeText('Add to cart',maxLines: 1,),
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),

@@ -1,3 +1,5 @@
+import 'package:Bijak/module/commons/widget/add_to_cart_btn.dart';
+import 'package:Bijak/module/commons/widget/inc_dec_btn.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:Bijak/data/dummy_data.dart';
 import 'package:Bijak/module/commons/widget/app_bar.dart';
@@ -172,36 +174,21 @@ class ProductDetailPage extends StatelessWidget {
   Widget _buildQuantityControl(ProductController productController, Product product, int quantity) {
     return Align(
       alignment: Alignment.bottomRight,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.remove),
-            onPressed: () {
-              productController.removeFromCart(product);
-            },
-          ),
-          Text('$quantity'),
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              productController.addToCart(product);
-            },
-          ),
-        ],
-      ),
+      child :IncrementDecrementRow(
+        cartQuantity: quantity,
+        onIncrement: () => productController.addToCart(product),
+        onDecrement: () => productController.removeFromCart(product),
+      )
     );
   }
 
   Widget _buildAddToCartButton(ProductController productController, Product product) {
     return Align(
       alignment: Alignment.bottomRight,
-      child: ElevatedButton(
-        onPressed: () {
-          productController.addToCart(product);
-        },
-        child: const AutoSizeText('Add to cart', maxLines: 1),
+      child :AddToCartButton(
+        onPressed: () => productController.addToCart(product),
       ),
+
     );
   }
 }

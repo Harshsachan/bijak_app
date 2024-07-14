@@ -18,7 +18,7 @@ class HomeController extends BaseController {
     super.onInit();
     startAutoScroll();
     // Simulate a delay to fetch data
-    Future.delayed(Duration(seconds: 5), () {
+    Future.delayed(Duration(seconds: 1), () {
       isLoading.value = false;
       categories.value = dummyData;
       recentlyOrdered.value = dummyData.expand((category) => category.products).take(5).toList();
