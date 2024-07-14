@@ -1,6 +1,6 @@
 // main.dart
 
-import 'package:Bijak/module/main/main_screen.dart';
+import 'package:Bijak/module/bottomNavigation/screen/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

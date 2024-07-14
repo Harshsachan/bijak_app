@@ -1,32 +1,22 @@
-
+import 'package:Bijak/module/bottomNavigation/controller/main_screen_controller.dart';
 import 'package:Bijak/module/home/screen/home_screen.dart';
 import 'package:Bijak/module/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class MainScreen extends StatefulWidget {
-  @override
-  _MainScreenState createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
+class MainScreen extends StatelessWidget {
+  final MainScreenController controller = Get.put(MainScreenController());
 
   final List<Widget> _pages = [
     HomePage(),
     ProfilePage(),
   ];
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
+      body: Obx(() => _pages[controller.selectedIndex.value]),
+      bottomNavigationBar: Obx(() => BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -37,15 +27,10 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Profile',
           ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
-        onTap: _onItemTapped,
-      ),
+        currentIndex: controller.selectedIndex.value,
+        selectedItemColor: Colors.green,
+        onTap: controller.onItemTapped,
+      )),
     );
   }
 }
-
-
-
-
-
