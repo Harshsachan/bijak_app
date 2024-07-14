@@ -1,5 +1,5 @@
 import 'package:Bijak/module/commons/controller/base_controller.dart';
-import 'package:Bijak/module/afterOrder/after_order.dart';
+import 'package:Bijak/module/afterOrder/screen/after_order.dart';
 import 'package:get/get.dart';
 
 class CartController extends BaseController {
