@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:bijak_app/data/dummy_data.dart';
+import 'package:Bijak/data/dummy_data.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -1,7 +1,10 @@
+import 'package:Bijak/module/commons/widget/add_to_cart_btn.dart';
+import 'package:Bijak/module/commons/widget/inc_dec_btn.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:bijak_app/data/dummy_data.dart';
-import 'package:bijak_app/module/home/controller/product_controller.dart';
-import 'package:bijak_app/module/home/screen/cart_page.dart';
+import 'package:Bijak/data/dummy_data.dart';
+import 'package:Bijak/module/commons/widget/app_bar.dart';
+import 'package:Bijak/module/product/controller/product_controller.dart';
+import 'package:Bijak/module/cart/screen/cart_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
@@ -15,41 +18,40 @@ class ProductDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final ProductController productController = Get.put(ProductController());
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green,
-        title: const Text(
-          'Product Detail',
-          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
+    return WillPopScope(
+      onWillPop: () async {
+        Get.back(result: productController.cartItems);
+        return false; // Returning false prevents the default back navigation
+      },
+      child: Scaffold(
+        appBar: CustomAppBar(
+          title: 'Product Detail',
+          leadingIcon: Icons.arrow_back,
+          leadingOnPressed: () {
             Get.back(result: productController.cartItems);
           },
         ),
+        body: Obx(() {
+          if (productController.isLoading.value) {
+            return _buildShimmer();
+          } else {
+            return _buildProductDetail(context, product, productController);
+          }
+        }),
+        floatingActionButton: Obx(() => Visibility(
+          visible: productController.cartItems.isNotEmpty,
+          child: FloatingActionButton(
+            onPressed: () async {
+              var result = await Get.to(() => CartPage(cartItems: productController.cartItems));
+              if (result != null) {
+                productController.cartItems.value = result;
+                productController.saveCartData();
+              }
+            },
+            child: const Icon(Icons.shopping_cart),
+          ),
+        )),
       ),
-      body: Obx(() {
-        if (productController.isLoading.value) {
-          return _buildShimmer();
-        } else {
-          return _buildProductDetail(context, product, productController);
-        }
-      }),
-      floatingActionButton: Obx(() => Visibility(
-        visible: productController.cartItems.isNotEmpty,
-        child: FloatingActionButton(
-          onPressed: () async {
-            var result = await Get.to(() => CartPage(cartItems: productController.cartItems));
-            if (result != null) {
-              productController.cartItems.value = result;
-              productController.saveCartData();
-            }
-          },
-          child: const Icon(Icons.shopping_cart),
-        ),
-      )),
     );
   }
 
@@ -172,36 +174,21 @@ class ProductDetailPage extends StatelessWidget {
   Widget _buildQuantityControl(ProductController productController, Product product, int quantity) {
     return Align(
       alignment: Alignment.bottomRight,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.remove),
-            onPressed: () {
-              productController.removeFromCart(product);
-            },
-          ),
-          Text('$quantity'),
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              productController.addToCart(product);
-            },
-          ),
-        ],
-      ),
+      child :IncrementDecrementRow(
+        cartQuantity: quantity,
+        onIncrement: () => productController.addToCart(product),
+        onDecrement: () => productController.removeFromCart(product),
+      )
     );
   }
 
   Widget _buildAddToCartButton(ProductController productController, Product product) {
     return Align(
       alignment: Alignment.bottomRight,
-      child: ElevatedButton(
-        onPressed: () {
-          productController.addToCart(product);
-        },
-        child: const AutoSizeText('Add to cart', maxLines: 1),
+      child :AddToCartButton(
+        onPressed: () => productController.addToCart(product),
       ),
+
     );
   }
 }
